@@ -1,0 +1,20 @@
+{
+    "go.formatTool": "gofmt",
+    "go.lintTool": "golangci-lint",
+    "go.useLanguageServer": true,
+    "go.testFlags": ["-v"],
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "golang.go",
+    "editor.tabSize": 4,
+    "files.exclude": {
+        "**/uploads": true,
+        "**/tmp": true,
+        "**/dist": true
+    },
+    "go.toolsManagement.autoUpdate": true
+}
