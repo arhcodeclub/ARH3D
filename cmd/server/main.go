@@ -40,7 +40,9 @@ func main() {
 		log.Println("Shutting down gracefully...")
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
-		srv.Shutdown(ctx)
+		if err := srv.Shutdown(ctx); err != nil {
+			log.Printf("Shutdown error: %v", err)
+		}
 	}()
 
 	log.Printf("Server listening on %s", addr)
