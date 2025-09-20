@@ -1,18 +1,17 @@
 {{define "layout"}}
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<title>{{block "title" .}}ARH3D{{end}}</title>
-		<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-	</head>
-	<body class="bg-slate-900 text-slate-100 min-h-screen">
-		<header class="p-4 bg-slate-800 border-b border-slate-700">
-			<h1 class="text-xl font-semibold">ARH3D</h1>
-		</header>
-		<main class="p-4 max-w-3xl mx-auto">{{block "content" .}}{{end}}</main>
-		<footer class="p-4 text-center text-xs text-slate-500">Test test</footer>
-	</body>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{block "title" .}}ARH3D{{end}}</title>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body class="bg-slate-900 text-slate-100 min-h-screen">
+        <main class="pl-4 mx-auto">{{block "content" .}}{{end}}</main>
+        <footer class="p-4 text-center text-xs text-slate-500">
+            Test test
+        </footer>
+    </body>
 </html>
 {{end}}

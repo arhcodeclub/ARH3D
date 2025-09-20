@@ -1,26 +1,46 @@
 {{define "title"}}ARH3D{{end}} {{template "layout" .}} {{define "content"}}
 
-<section class="mb-8 space-y-3">
-	<h2 class="text-lg font-semibold">Welcome to ARH3D</h2>
-	<p class="text-sm text-slate-400">
-		Lorem ipsum dolor, sit amet consectetur adipisicing elit. Delectus impedit itaque incidunt ratione a architecto
-		laborum similique alias consequatur ullam, explicabo nam fugiat asperiores corrupti! Itaque fuga eligendi ipsum
-		cumque.
-	</p>
-	<p class="text-sm text-slate-400">
-		Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis nobis, aliquam sed ratione magnam atque veniam
-		natus iste soluta, aperiam debitis fugiat magni numquam totam voluptatum sapiente tempore. Amet, illum!
-	</p>
-</section>
-
-<section class="space-y-2">
-	<div class="flex items-center justify-between">
-		<h2 class="text-lg font-semibold">Job Queue</h2>
-	</div>
-	<div class="text-slate-500 text-sm">
-		Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos, corporis officiis? Minus adipisci officiis fugiat
-		consequatur sunt, cupiditate dolor eum illum necessitatibus aut tempore rerum sequi expedita officia porro qui?
-	</div>
-</section>
+<div class="flex w-full min-h-[70vh]">
+    <main class="flex-1 p-10 flex flex-col">
+        <span
+            class="text-4xl font-extrabold text-emerald-500 tracking-tight mb-4 block"
+            >ARH3D</span
+        >
+        <h2 class="text-2xl font-semibold mb-4 text-slate-200">
+            Welcome to ARH3D
+        </h2>
+        <p class="text-lg text-slate-400 mb-2">
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Delectus
+            impedit itaque incidunt ratione a architecto laborum similique alias
+            consequatur ullam, explicabo nam fugiat asperiores corrupti! Itaque
+            fuga eligendi ipsum cumque.
+        </p>
+        <p class="text-lg text-slate-400">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis
+            nobis, aliquam sed ratione magnam atque veniam natus iste soluta,
+            aperiam debitis fugiat magni numquam totam voluptatum sapiente
+            tempore. Amet, illum!
+        </p>
+    </main>
+    <aside
+        class="flex flex-col gap-4 items-center py-10 px-4 bg-slate-800 border-r border-slate-700 min-w-[120px]"
+    >
+        <button
+            class="w-full rounded-md bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-4 py-2 shadow transition focus:outline-none focus:ring-2 focus:ring-emerald-400"
+        >
+            New Job
+        </button>
+        <button
+            class="w-full rounded-md border border-emerald-500 text-emerald-500 font-semibold px-4 py-2 bg-transparent hover:bg-emerald-50/10 transition"
+        >
+            Info
+        </button>
+        <button
+            class="w-full rounded-md border border-slate-600 px-4 py-2 text-slate-300 font-medium bg-slate-800 hover:bg-slate-700 transition"
+        >
+            Help
+        </button>
+    </aside>
+</div>
 
 {{end}}
