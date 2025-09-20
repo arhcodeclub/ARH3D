@@ -29,6 +29,23 @@ func main() {
 		}
 	})
 
+	mux.HandleFunc("/new", func(w http.ResponseWriter, r *http.Request) {
+		tmpl, err := template.ParseFiles(
+			"internal/http/templates/layout.html",
+			"internal/http/templates/new.html",
+		)
+		if err != nil {
+			log.Println("TEMPLATE PARSE ERROR:", err)
+			http.Error(w, "template parse error", 500)
+			return
+		}
+		if err := tmpl.ExecuteTemplate(w, "new.html", nil); err != nil {
+			log.Println("TEMPLATE EXEC ERROR:", err)
+			http.Error(w, "template exec error", 500)
+			return
+		}
+	})
+
 	addr := ":8080"
 	srv := &http.Server{Addr: addr, Handler: mux}
 
