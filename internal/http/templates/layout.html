@@ -15,10 +15,38 @@
                 ':35729/livereload.js?snipver=1"><\/script>'
         );
     </script>
-    <body class="bg-slate-900 text-slate-100 min-h-screen">
-        <main class="pl-4 mx-auto">{{block "content" .}}{{end}}</main>
-        <footer class="p-4 text-center text-xs text-slate-500">
-            Test test
+    <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+        <main class="pl-4 mx-auto flex-1">{{block "content" .}}{{end}}</main>
+        <footer
+            class="py-2 px-4 mt-8 border-t border-slate-700 bg-slate-950 text-center text-sm text-slate-400"
+        >
+            <div class="mb-2">
+                <a
+                    href="https://github.com/arhcodeclub/arh3d"
+                    target="_blank"
+                    rel="noopener"
+                    class="hover:underline text-slate-300"
+                >
+                    <svg
+                        class="inline-block w-4 h-4 align-text-bottom mr-1"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.28 3.438 9.76 8.205 11.345.6.113.82-.258.82-.577
+                        0-.285-.012-1.23-.017-2.23-3.338.726-4.042-1.61-4.042-1.61C4.422 17.07 3.633 16.7 3.633
+                        16.7c-1.087-.744.083-.729.083-.729 1.205.085 1.84 1.237 1.84 1.237 1.07 1.834 2.809
+                        1.304 3.495.997.108-.775.419-1.304.762-1.605-2.665-.304-5.466-1.332-5.466-5.932
+                        0-1.31.469-2.38 1.236-3.22-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322
+                        3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.29-1.553 3.297-1.23
+                        3.297-1.23.653 1.653.242 2.873.12 3.176.77.84 1.235 1.91 1.235 3.22 0 4.61-2.803
+                        5.625-5.475 5.922.43.37.823 1.096.823 2.21 0 1.595-.015 2.883-.015 3.28 0
+                        .32.216.694.825.576C20.565 22.257 24 17.78 24 12.5 24 5.87 18.63.5 12 .5z"
+                        />
+                    </svg>
+                    View on GitHub
+                </a>
+            </div>
         </footer>
     </body>
 </html>
