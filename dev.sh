@@ -13,7 +13,8 @@ reflex -r '\.go$|\.html$' --start-service -- sh -c 'go run cmd/server/main.go' &
 SERVER_PID=$!
 sleep 1
 
-ip=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1' | head -n 1)
+# ip=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1' | head -n 1)
+ip=$(ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1' | head -n 1)
 
 echo ""
 echo "Started:"
@@ -23,6 +24,9 @@ echo ""
 echo "Press Ctrl+C to stop."
 echo "======================================="
 
-trap "echo; echo 'Shutting down...'; kill $LIVERELOAD_PID $SERVER_PID" SIGINT
+# trap "echo; echo 'Shutting down...'; kill $LIVERELOAD_PID $SERVER_PID" SIGINT
+trap "echo; echo 'Shutting down...';
+      kill $LIVERELOAD_PID 2>/dev/null;
+      kill $SERVER_PID 2>/dev/null" SIGINT
 
 wait

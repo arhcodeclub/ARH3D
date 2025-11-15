@@ -1,70 +1,57 @@
 package main
 
 import (
-	"context"
-	"html/template"
-	"log"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
+    "log"
+    "net/http"
+    "os"
+    "os/signal"
+    "syscall"
+    "time"
+    "context"
+
+    "github.com/arhcodeclub/arh3d/internal/db"
+    "github.com/arhcodeclub/arh3d/internal/handlers"
 )
 
 func main() {
-	tmpl := template.Must(template.ParseFiles(
-		"internal/http/templates/layout.html",
-		"internal/http/templates/index.html",
-	))
+    db.Connect()
 
-	// ServeMux compares and calls the requested handler.
-	// https://pkg.go.dev/net/http#ServeMux
-	mux := http.NewServeMux()
+    mux := http.NewServeMux()
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// Render the root template.
-		if err := tmpl.ExecuteTemplate(w, "index.html", nil); err != nil {
-			http.Error(w, "template error", 500)
-			return
-		}
-	})
+    // Serve static files (optional: CSS/JS)
+    mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("internal/http/static"))))
 
-	mux.HandleFunc("/new", func(w http.ResponseWriter, r *http.Request) {
-		tmpl, err := template.ParseFiles(
-			"internal/http/templates/layout.html",
-			"internal/http/templates/new.html",
-		)
-		if err != nil {
-			log.Println("TEMPLATE PARSE ERROR:", err)
-			http.Error(w, "template parse error", 500)
-			return
-		}
-		if err := tmpl.ExecuteTemplate(w, "new.html", nil); err != nil {
-			log.Println("TEMPLATE EXEC ERROR:", err)
-			http.Error(w, "template exec error", 500)
-			return
-		}
-	})
+    // Routes
+    mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        err := handlers.RenderTemplate(w,
+            "internal/http/templates/layout.html",
+            "internal/http/templates/index.html",
+        )
+        if err != nil {
+            http.Error(w, "Template error", 500)
+        }
+    })
+    mux.HandleFunc("/new", handlers.NewRequestHandler)
 
-	addr := ":8080"
-	srv := &http.Server{Addr: addr, Handler: mux}
+    addr := ":8080"
+    srv := &http.Server{Addr: addr, Handler: mux}
 
-	// Graceful shutdown.
-	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-		<-c
-		log.Println("Shutting down gracefully...")
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-		defer cancel()
-		if err := srv.Shutdown(ctx); err != nil {
-			log.Printf("Shutdown error: %v", err)
-		}
-	}()
+    // Graceful shutdown
+    go func() {
+        c := make(chan os.Signal, 1)
+        signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+        <-c
+        log.Println("Shutting down gracefully...")
+        ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+        defer cancel()
+        if err := srv.Shutdown(ctx); err != nil {
+            log.Printf("Shutdown error: %v", err)
+        }
+    }()
 
-	log.Printf("Server listening on %s", addr)
-	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-		log.Fatalf("ListenAndServe(): %v", err)
-	}
-	log.Println("Server stopped")
+    log.Printf("Server running on %s", addr)
+    if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+        log.Fatalf("ListenAndServe(): %v", err)
+    }
 }
+
