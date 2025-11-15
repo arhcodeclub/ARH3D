@@ -1,0 +1,45 @@
+{{define "title"}}Welcome – ARH3D{{end}}
+{{template "layout" .}}
+
+{{define "content"}}
+<div class="flex flex-col items-center justify-center min-h-[75vh] p-6">
+    <div class="w-full max-w-md bg-slate-800 rounded-xl shadow-md p-8">
+        <h1 class="text-2xl font-bold mb-4 text-slate-100 text-center">Welcome to ARH3D</h1>
+        <p class="text-sm text-slate-400 mb-6 text-center">
+            Let's finish setting up your account for <span class="font-mono">{{.User.Email}}</span>.
+        </p>
+
+        <form method="POST" action="/onboarding" class="space-y-4">
+            <div>
+                <label for="name" class="block text-slate-300 mb-1 font-medium">Your Name</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    required
+                    placeholder="Jane Doe"
+                    class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-200"
+                />
+            </div>
+
+            <div>
+                <label for="department" class="block text-slate-300 mb-1 font-medium">Class / Department (optional)</label>
+                <input
+                    type="text"
+                    id="department"
+                    name="department"
+                    placeholder="e.g. 4VWO, Informatica"
+                    class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-200"
+                />
+            </div>
+
+            <button
+                type="submit"
+                class="w-full rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6 py-2 shadow transition focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            >
+                Finish
+            </button>
+        </form>
+    </div>
+</div>
+{{end}}
