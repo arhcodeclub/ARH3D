@@ -14,14 +14,6 @@
     >
         <div class="mb-2 text-sm text-slate-400">
             Logged in as <span class="font-semibold text-slate-100">{{.User.Name}}</span>
-                <form method="POST" action="/logout" class="inline">
-                <button
-                    type="submit"
-                    class="ml-2 text-xs text-emerald-400 hover:underline"
-                >
-                    Log out
-                </button>
-            </form>
         </div>
 
         <div>
@@ -164,18 +156,22 @@ function validateForm() {
         alert("Please choose an option.");
         return false;
     }
+
     if (selected.value === "file" && document.getElementById("file").files.length === 0) {
         alert("Please select a file to upload.");
         return false;
     }
+
     if (selected.value === "link" && document.getElementById("link").value.trim() === "") {
         alert("Please enter a link.");
         return false;
     }
+
     if (selected.value === "description" && document.getElementById("description").value.trim() === "") {
         alert("Please enter a description.");
         return false;
     }
+
     return true;
 }
 </script>

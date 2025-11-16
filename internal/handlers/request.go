@@ -84,28 +84,36 @@ func NewRequestHandler(w http.ResponseWriter, r *http.Request) {
 					http.Error(w, "Failed to save file", 500)
 					return
 				}
-
 				defer dst.Close()
 				if _, err = dst.ReadFrom(file); err != nil {
 					log.Printf("[REQUEST] Error writing upload file: %v", err)
 					http.Error(w, "Failed to save file", 500)
 					return
 				}
-
 				log.Printf("[REQUEST] Saved upload to %s.", filePath)
 			} else {
 				log.Printf("[REQUEST] Error reading uploaded file: %v", err)
 			}
 		}
 
+		var queueCount int64
+		if err := db.DB.Model(&models.PrintRequest{}).
+			Where("status = ?", "in_queue").
+			Count(&queueCount).Error; err != nil {
+			log.Printf("[REQUEST] Error counting in-queue requests: %v", err)
+		}
+
 		request := models.PrintRequest{
-			Name: name,
-			InputType: inputType,
-			FilePath: filePath,
-			Link: link,
-			Description: description,
-			Colour: colour,
-			Comments: comments,
+			UserID:        user.ID,
+			Name:          name,
+			InputType:     inputType,
+			FilePath:      filePath,
+			Link:          link,
+			Description:   description,
+			Colour:        colour,
+			Comments:      comments,
+            Status:        "in_queue", // TODO: default to pending
+			QueuePosition: int(queueCount) + 1,
 		}
 
 		if err := db.DB.Create(&request).Error; err != nil {
@@ -114,9 +122,10 @@ func NewRequestHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		log.Printf("[REQUEST] Saved PrintRequest id=%d for user name=%q.", request.ID, name)
+		log.Printf("[REQUEST] Saved PrintRequest id=%d for user_id=%d with status=%s queue_pos=%d.",
+			request.ID, request.UserID, request.Status, request.QueuePosition)
 
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/status", http.StatusSeeOther)
 
 	default:
 		http.Error(w, "Method not allowed", 405)

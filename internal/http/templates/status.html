@@ -1,0 +1,108 @@
+{{define "title"}}My Print Requests – ARH3D{{end}}
+{{template "layout" .}}
+
+{{define "content"}}
+<div class="max-w-3xl mx-auto mt-12 bg-slate-800 p-8 rounded-xl shadow-md">
+    <h1 class="text-2xl font-bold mb-4 text-slate-100">My Print Requests</h1>
+
+    <p class="text-sm text-slate-400 mb-6">
+        Logged in as <span class="font-semibold text-slate-100">{{.User.Name}}</span>
+        ({{.User.Email}})
+    </p>
+
+    {{if not .Requests}}
+        <p class="text-slate-400">
+            You don't have any print requests yet.
+            <a href="/new" class="text-emerald-400 hover:underline">Submit your first job</a>.
+        </p>
+    {{else}}
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left text-slate-300">
+                <thead class="border-b border-slate-700 text-slate-400 text-xs uppercase">
+                    <tr>
+                        <th class="px-3 py-2">Created At</th>
+                        <th class="px-3 py-2">Status</th>
+                        <th class="px-3 py-2">Type</th>
+                        <th class="px-3 py-2">Details</th>
+                        <th class="px-3 py-2">Colour</th>
+                        <th class="px-3 py-2">Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Requests}}
+                    <tr class="border-b border-slate-700/60 hover:bg-slate-700/30">
+                        <td class="px-3 py-2 whitespace-nowrap">
+                            {{.CreatedAt}}
+                        </td>
+                        <td class="px-3 py-2">
+                            {{/* Status label */}}
+                            {{if eq .Status "in_queue"}}
+                                <span class="text-amber-300 font-semibold">In queue</span>
+                                {{if gt .QueuePosition 0}}
+                                    <span class="text-xs text-slate-400 block">
+                                        Position: {{.QueuePosition}}
+                                    </span>
+                                {{end}}
+                            {{else if eq .Status "pending"}}
+                                <span class="text-slate-200">Pending review</span>
+                            {{else if eq .Status "printing"}}
+                                <span class="text-emerald-300 font-semibold">Printing</span>
+                            {{else if eq .Status "finished"}}
+                                <span class="text-emerald-400 font-semibold">Finished</span>
+                            {{else if eq .Status "rejected"}}
+                                <span class="text-red-400 font-semibold">Rejected</span>
+                            {{else if eq .Status "canceled"}}
+                                <span class="text-slate-500 font-semibold">Canceled</span>
+                            {{else if eq .Status "on_hold"}}
+                                <span class="text-yellow-300 font-semibold">On hold</span>
+                            {{else}}
+                                <span class="text-slate-500">Unknown</span>
+                            {{end}}
+                        </td>
+                        <td class="px-3 py-2">
+                            {{.InputType}}
+                        </td>
+                        <td class="px-3 py-2">
+                            {{if eq .InputType "file"}}
+                                <span class="text-slate-200">Uploaded file</span>
+                                {{if .FilePath}}
+                                    <span class="block text-xs text-slate-500 truncate">{{.FilePath}}</span>
+                                {{end}}
+                            {{else if eq .InputType "link"}}
+                                <a href="{{.Link}}" target="_blank" rel="noopener" class="text-emerald-400 hover:underline break-all">
+                                    {{.Link}}
+                                </a>
+                            {{else if eq .InputType "description"}}
+                                <span class="text-slate-200 break-words">{{.Description}}</span>
+                            {{else}}
+                                <span class="text-slate-500">Unknown</span>
+                            {{end}}
+                        </td>
+                        <td class="px-3 py-2">
+                            {{if .Colour}}
+                                <div class="flex items-center gap-2">
+                                    <span
+                                        class="inline-block w-4 h-4 rounded border border-slate-600"
+                                        style="background-color: {{.Colour}};"
+                                    ></span>
+                                    <span class="text-xs text-slate-300">{{.Colour}}</span>
+                                </div>
+                            {{else}}
+                                <span class="text-slate-500">—</span>
+                            {{end}}
+                        </td>
+                        <td class="px-3 py-2">
+                            {{if .Comments}}
+                                <span class="text-slate-200 break-words">{{.Comments}}</span>
+                            {{else}}
+                                <span class="text-slate-500">—</span>
+                            {{end}}
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    {{end}}
+</div>
+{{end}}
