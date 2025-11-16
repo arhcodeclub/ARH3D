@@ -69,6 +69,9 @@ func main() {
 	mux.Handle("/new", auth.RequireAuth(http.HandlerFunc(handlers.NewRequestHandler)))
 	mux.Handle("/status", auth.RequireAuth(http.HandlerFunc(handlers.StatusHandler)))
 
+    mux.Handle("/admin", http.HandlerFunc(handlers.AdminHandler))
+    mux.Handle("/admin/update", http.HandlerFunc(handlers.AdminHandler))
+
 	addr := ":8080"
 	srv := &http.Server{Addr: addr, Handler: mux}
 

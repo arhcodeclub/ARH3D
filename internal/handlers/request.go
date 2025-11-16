@@ -112,7 +112,7 @@ func NewRequestHandler(w http.ResponseWriter, r *http.Request) {
 			Description:   description,
 			Colour:        colour,
 			Comments:      comments,
-            Status:        "in_queue", // TODO: default to pending
+            Status:        "pending",
 			QueuePosition: int(queueCount) + 1,
 		}
 
