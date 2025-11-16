@@ -2,32 +2,37 @@
 {{template "layout" .}}
 
 {{define "content"}}
+<div class="flex flex-col items-center justify-center min-h-[75vh] text-center px-4 py-10">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-emerald-400 mb-4 tracking-tight">
+        ARH3D
+    </h1>
 
-<div class="flex flex-col items-center justify-center min-h-[75vh] text-center p-10">
+    {{with .User}}
+        <p class="text-sm text-slate-400 mb-4">Logged in as <span class="font-semibold text-slate-100">{{.Name}}</span>.</p>
+    {{end}}
 
-    <h1 class="text-4xl font-extrabold text-emerald-500 mb-6">ARH3D</h1>
-    <p class="text-lg text-slate-400 mb-10 max-w-xl">
-        Welcome to ARH3D. Choose an action below.
+    <p class="text-base md:text-lg text-slate-300 mb-6 max-w-xl">
+        Request, track, and manage 3D prints for your school projects.
     </p>
 
-    <div class="flex flex-col gap-4 w-full max-w-xs">
-
+    <div class="flex items-center gap-4 mb-6">
         <button
-            class="w-full rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6 py-3 shadow transition focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            class="rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6 py-3 shadow transition focus:outline-none focus:ring-2 focus:ring-emerald-400"
             onclick="location.href='/new'"
         >
             Submit New Print Job
         </button>
 
         <button
-            class="w-full rounded-lg border border-emerald-500 text-emerald-500 font-semibold px-6 py-3 bg-transparent hover:bg-emerald-50/10 transition"
+            class="rounded-lg border border-emerald-500 text-emerald-400 font-semibold px-6 py-3 bg-transparent hover:bg-emerald-500/10 transition focus:outline-none focus:ring-2 focus:ring-emerald-400"
             onclick="location.href='/status'"
         >
-            See Print Status
+            View My Requests
         </button>
-
     </div>
+
+    <p class="text-xs text-slate-500 max-w-sm">
+        You’ll need to log in with your <span class="font-mono">@gsf.nl</span> email to submit and view print jobs.
+    </p>
 </div>
-
 {{end}}
-

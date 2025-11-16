@@ -2,8 +2,24 @@
 {{template "layout" .}}
 
 {{define "content"}}
-<div class="max-w-lg mx-auto mt-12 bg-slate-800 p-8 rounded-xl shadow-md">
-    <h1 class="text-2xl font-bold mb-6 text-slate-100">New Print Request</h1>
+<div class="max-w-lg mx-auto mt-10 mb-8 bg-slate-800/90 border border-slate-700 p-8 rounded-xl shadow-lg">
+    <div class="flex items-center justify-between mb-2 text-sm text-slate-400">
+        <span>
+            Logged in as <span class="font-semibold text-slate-100">{{.User.Name}}</span> ({{.User.Email}})
+        </span>
+        <button
+            type="button"
+            class="text-xs text-emerald-400 hover:underline"
+            onclick="location.href='/status'"
+        >
+            View my requests
+        </button>
+    </div>
+
+    <h1 class="text-2xl font-bold mb-4 text-slate-100">New Print Request</h1>
+    <p class="text-sm text-slate-400 mb-6">
+        Tell us what you want to print. We’ll put it into the queue and update the status as it progresses.
+    </p>
 
     <form
         method="POST"
@@ -12,43 +28,36 @@
         class="space-y-6"
         onsubmit="return validateForm()"
     >
-        <div class="mb-2 text-sm text-slate-400">
-            Logged in as <span class="font-semibold text-slate-100">{{.User.Name}}</span>
-        </div>
-
         <div>
             <label class="block text-slate-300 mb-1 font-medium">What do you have?</label>
-            <div class="flex flex-col gap-2">
-                <label class="flex items-center gap-2">
+            <div class="flex flex-col gap-1 text-sm text-slate-200">
+                <label class="flex items-center gap-2 cursor-pointer">
                     <input type="radio" name="input_type" value="file" onchange="showInput(this)" />
                     I have a 3D model file ready
                 </label>
-                <label class="flex items-center gap-2">
+                <label class="flex items-center gap-2 cursor-pointer">
                     <input type="radio" name="input_type" value="link" onchange="showInput(this)" />
                     I have a link to a model
                 </label>
-                <label class="flex items-center gap-2">
+                <label class="flex items-center gap-2 cursor-pointer">
                     <input type="radio" name="input_type" value="description" onchange="showInput(this)" />
-                    I want to describe the object
+                    I want to describe the object <span class="text-xs text-slate-100">(we will e-mail you to confirm the design)</span>
                 </label>
             </div>
         </div>
 
         <div id="file-input" class="hidden">
-            <label class="block text-slate-300 mb-1 font-medium">Upload 3D Print File</label>
+            <label class="block text-slate-300 mb-1 font-medium">Upload 3D print file</label>
             <label
-                class="w-full flex flex-col items-center px-4 py-6 bg-slate-900 text-slate-200 rounded-lg shadow-lg tracking-wide border border-slate-600 cursor-pointer hover:bg-slate-700 transition"
+                class="w-full flex flex-col items-center px-4 py-6 bg-slate-900 text-slate-200 rounded-lg shadow-lg tracking-wide border border-dashed border-slate-600 cursor-pointer hover:bg-slate-800 transition"
             >
-                <svg
-                    class="w-8 h-8"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 16v4h10v-4M12 12V4m0 0L8 8m4-4l4 4"/>
+                <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M7 16v4h10v-4M12 12V4m0 0L8 8m4-4l4 4" />
                 </svg>
-                <span class="mt-2 text-base leading-normal">Choose a file (.3mf, .stl, .gcode, .obj, .amf)</span>
+                <span class="text-sm leading-normal">
+                    Choose a file (.3mf, .stl, .gcode, .obj, .amf)
+                </span>
                 <input
                     type="file"
                     id="file"
@@ -60,13 +69,13 @@
         </div>
 
         <div id="link-input" class="hidden">
-            <label for="link" class="block text-slate-300 mb-1 font-medium">Provide a link to a model</label>
+            <label for="link" class="block text-slate-300 mb-1 font-medium">Link to a model</label>
             <input
                 type="url"
                 id="link"
                 name="link"
                 placeholder="https://example.com/model.stl"
-                class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-200"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
             />
         </div>
 
@@ -76,8 +85,8 @@
                 id="description"
                 name="description"
                 rows="3"
-                placeholder="Describe what you want to print"
-                class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-200"
+                placeholder="What should it look like, how big, any special details…"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
             ></textarea>
         </div>
 
@@ -87,7 +96,7 @@
                 <select
                     id="colour"
                     name="colour"
-                    class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-200"
+                    class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100"
                     onchange="showColourPreview(this)"
                     required
                 >
@@ -110,21 +119,23 @@
         </div>
 
         <div>
-            <label for="comments" class="block text-slate-300 mb-1 font-medium">Additional Comments</label>
+            <label for="comments" class="block text-slate-300 mb-1 font-medium">Additional comments</label>
             <textarea
                 id="comments"
                 name="comments"
                 rows="3"
-                class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-200"
+                placeholder="Any deadlines, special instructions, or context?"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
             ></textarea>
+            <span class="text-sm text-slate-200">If your request is urgent, please contact x</span>
         </div>
 
         <div class="flex justify-end">
             <button
                 type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded transition"
+                class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6 py-2 rounded-lg transition focus:outline-none focus:ring-2 focus:ring-emerald-400"
             >
-                Submit
+                Submit request
             </button>
         </div>
     </form>
@@ -153,27 +164,22 @@ function showInput(radio) {
 function validateForm() {
     const selected = document.querySelector('input[name="input_type"]:checked');
     if (!selected) {
-        alert("Please choose an option.");
+        alert("Please choose what kind of input you have.");
         return false;
     }
-
     if (selected.value === "file" && document.getElementById("file").files.length === 0) {
         alert("Please select a file to upload.");
         return false;
     }
-
     if (selected.value === "link" && document.getElementById("link").value.trim() === "") {
         alert("Please enter a link.");
         return false;
     }
-
     if (selected.value === "description" && document.getElementById("description").value.trim() === "") {
-        alert("Please enter a description.");
+        alert("Please describe what you want to print.");
         return false;
     }
-
     return true;
 }
 </script>
 {{end}}
-

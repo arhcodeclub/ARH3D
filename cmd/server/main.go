@@ -12,10 +12,11 @@ import (
 	"github.com/arhcodeclub/arh3d/internal/auth"
 	"github.com/arhcodeclub/arh3d/internal/db"
 	"github.com/arhcodeclub/arh3d/internal/handlers"
+	"github.com/arhcodeclub/arh3d/internal/models"
 )
 
 func main() {
-    log.Printf("Starting service.")
+	log.Printf("Starting service.")
 
 	db.Connect()
 
@@ -25,7 +26,29 @@ func main() {
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("[HTTP] %s %s", r.Method, r.URL.Path)
-		if err := handlers.RenderTemplate(w,
+
+		data := map[string]any{}
+
+		if sess, err := auth.GetSession(r); err == nil {
+			var user models.User
+			if err := db.DB.First(&user, sess.UserID).Error; err == nil {
+				var activeCount int64
+				if err := db.DB.Model(&models.PrintRequest{}).
+					Where("user_id = ? AND status IN ?", user.ID, []string{"in_queue", "printing"}).
+					Count(&activeCount).Error; err != nil {
+					log.Printf("[HTTP] Error counting active requests for user_id=%d: %v", user.ID, err)
+					activeCount = 0
+				}
+
+				data["User"] = user
+				data["ActiveCount"] = activeCount
+			} else {
+				log.Printf("[HTTP] Could not load user for session user_id=%d: %v", sess.UserID, err)
+			}
+		}
+
+		if err := handlers.RenderTemplateWithData(w,
+			data,
 			"internal/http/templates/layout.html",
 			"internal/http/templates/index.html",
 		); err != nil {
@@ -69,8 +92,8 @@ func main() {
 	mux.Handle("/new", auth.RequireAuth(http.HandlerFunc(handlers.NewRequestHandler)))
 	mux.Handle("/status", auth.RequireAuth(http.HandlerFunc(handlers.StatusHandler)))
 
-    mux.Handle("/admin", http.HandlerFunc(handlers.AdminHandler))
-    mux.Handle("/admin/update", http.HandlerFunc(handlers.AdminHandler))
+	mux.Handle("/admin", http.HandlerFunc(handlers.AdminHandler))
+	mux.Handle("/admin/update", http.HandlerFunc(handlers.AdminHandler))
 
 	addr := ":8080"
 	srv := &http.Server{Addr: addr, Handler: mux}
