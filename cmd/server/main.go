@@ -94,6 +94,9 @@ func main() {
 
 	mux.Handle("/admin", http.HandlerFunc(handlers.AdminHandler))
 	mux.Handle("/admin/update", http.HandlerFunc(handlers.AdminHandler))
+    mux.Handle("/admin/filament/add", http.HandlerFunc(handlers.AdminHandler))
+    mux.Handle("/admin/filament/delete", http.HandlerFunc(handlers.AdminHandler))
+    mux.Handle("/admin/download", http.HandlerFunc(handlers.AdminDownloadFile))
 
 	addr := ":8080"
 	srv := &http.Server{Addr: addr, Handler: mux}

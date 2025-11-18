@@ -25,6 +25,7 @@ func Connect() {
 		&models.PrintRequest{},
 		&models.User{},
 		&models.LoginToken{},
+        &models.Filament{},
 	)
 
     if err != nil {

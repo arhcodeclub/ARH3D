@@ -29,8 +29,19 @@ func NewRequestHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		var filaments []models.Filament
+		if err := db.DB.Order("type, colour").Find(&filaments).Error; err != nil {
+			log.Printf("[REQUEST] Error loading filaments: %v", err)
+			filaments = nil
+		}
+
+		data := map[string]any{
+			"User":      user,
+			"Filaments": filaments,
+		}
+
 		if err := RenderTemplateWithData(w,
-			map[string]any{"User": user},
+			data,
 			"internal/http/templates/layout.html",
 			"internal/http/templates/new.html",
 		); err != nil {
@@ -112,7 +123,7 @@ func NewRequestHandler(w http.ResponseWriter, r *http.Request) {
 			Description:   description,
 			Colour:        colour,
 			Comments:      comments,
-            Status:        "pending",
+			Status:        "pending",
 			QueuePosition: int(queueCount) + 1,
 		}
 

@@ -9,7 +9,6 @@ import (
 	"github.com/arhcodeclub/arh3d/internal/auth"
 	"github.com/arhcodeclub/arh3d/internal/db"
 	"github.com/arhcodeclub/arh3d/internal/models"
-	"gorm.io/gorm"
 )
 
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,12 +33,16 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch {
-        case r.Method == http.MethodGet && r.URL.Path == "/admin":
-            adminListPage(w, r, &user)
-        case r.Method == http.MethodPost && r.URL.Path == "/admin/update":
-            adminUpdateRequest(w, r, &user)
-        default:
-            http.Error(w, "Not found", http.StatusNotFound)
+	case r.Method == http.MethodGet && r.URL.Path == "/admin":
+		adminListPage(w, r, &user)
+	case r.Method == http.MethodPost && r.URL.Path == "/admin/update":
+		adminUpdateRequest(w, r, &user)
+	case r.Method == http.MethodPost && r.URL.Path == "/admin/filament/add":
+		adminAddFilament(w, r, &user)
+	case r.Method == http.MethodPost && r.URL.Path == "/admin/filament/delete":
+		adminDeleteFilament(w, r, &user)
+	default:
+		http.Error(w, "Not found", http.StatusNotFound)
 	}
 }
 
@@ -60,10 +63,17 @@ func adminListPage(w http.ResponseWriter, r *http.Request, admin *models.User) {
 		return
 	}
 
+	var filaments []models.Filament
+	if err := db.DB.Order("type, colour").Find(&filaments).Error; err != nil {
+		log.Printf("[ADMIN] DB error fetching filaments: %v", err)
+		filaments = nil
+	}
+
 	data := map[string]any{
-		"Admin":    admin,
-		"Requests": requests,
+		"Admin":        admin,
+		"Requests":     requests,
 		"StatusFilter": statusFilter,
+		"Filaments":    filaments,
 	}
 
 	if err := RenderTemplateWithData(w,
@@ -75,6 +85,63 @@ func adminListPage(w http.ResponseWriter, r *http.Request, admin *models.User) {
 		http.Error(w, "Template error", http.StatusInternalServerError)
 		return
 	}
+}
+
+func adminAddFilament(w http.ResponseWriter, r *http.Request, admin *models.User) {
+	if err := r.ParseForm(); err != nil {
+		log.Printf("[ADMIN] Error parsing filament add form: %v", err)
+		http.Error(w, "Invalid form data", http.StatusBadRequest)
+		return
+	}
+
+	fType := strings.TrimSpace(r.FormValue("type"))
+	colour := strings.TrimSpace(r.FormValue("colour"))
+	hex := strings.TrimSpace(r.FormValue("hex"))
+
+	if fType == "" || colour == "" {
+		log.Printf("[ADMIN] Missing type or colour when adding filament.")
+		http.Error(w, "Type and colour are required", http.StatusBadRequest)
+		return
+	}
+
+	f := models.Filament{
+		Type:   fType,
+		Colour: colour,
+		Hex:    hex,
+	}
+	if err := db.DB.Create(&f).Error; err != nil {
+		log.Printf("[ADMIN] Error creating filament: %v", err)
+		http.Error(w, "Failed to add filament", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("[ADMIN] Added filament id=%d type=%s colour=%s", f.ID, f.Type, f.Colour)
+	http.Redirect(w, r, "/admin", http.StatusSeeOther)
+}
+
+func adminDeleteFilament(w http.ResponseWriter, r *http.Request, admin *models.User) {
+	if err := r.ParseForm(); err != nil {
+		log.Printf("[ADMIN] Error parsing filament delete form: %v", err)
+		http.Error(w, "Invalid form data", http.StatusBadRequest)
+		return
+	}
+
+	idStr := r.FormValue("id")
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil || id == 0 {
+		log.Printf("[ADMIN] Invalid filament ID: %q", idStr)
+		http.Error(w, "Invalid filament ID", http.StatusBadRequest)
+		return
+	}
+
+	if err := db.DB.Delete(&models.Filament{}, id).Error; err != nil {
+		log.Printf("[ADMIN] Error deleting filament id=%d: %v", id, err)
+		http.Error(w, "Failed to delete filament", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("[ADMIN] Deleted filament id=%d", id)
+	http.Redirect(w, r, "/admin", http.StatusSeeOther)
 }
 
 func adminUpdateRequest(w http.ResponseWriter, r *http.Request, admin *models.User) {
@@ -98,13 +165,13 @@ func adminUpdateRequest(w http.ResponseWriter, r *http.Request, admin *models.Us
 	}
 
 	allowedStatuses := map[string]bool{
-		"pending": true,
-		"in_queue": true,
-		"printing": true,
-		"finished": true,
-		"rejected": true,
-		"canceled": true,
-		"on_hold": true,
+		"pending":   true,
+		"in_queue":  true,
+		"printing":  true,
+		"finished":  true,
+		"rejected":  true,
+		"canceled":  true,
+		"on_hold":   true,
 	}
 	if status != "" && !allowedStatuses[status] {
 		log.Printf("[ADMIN] Invalid status %q for request id=%d", status, id)
@@ -114,13 +181,8 @@ func adminUpdateRequest(w http.ResponseWriter, r *http.Request, admin *models.Us
 
 	var req models.PrintRequest
 	if err := db.DB.First(&req, id).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			log.Printf("[ADMIN] PrintRequest id=%d not found.", id)
-			http.Error(w, "Request not found", http.StatusNotFound)
-			return
-		}
 		log.Printf("[ADMIN] DB error fetching PrintRequest id=%d: %v", id, err)
-		http.Error(w, "Server error", http.StatusInternalServerError)
+		http.Error(w, "Request not found", http.StatusNotFound)
 		return
 	}
 
